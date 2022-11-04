@@ -1,0 +1,11 @@
+<launch>
+
+    <node pkg="tf" type="static_transform_publisher" name="map_to_octomap" args="-1 0 0 0 0 0 1 world map 100" />
+    <node type="octomap_pub" pkg="core_octomap_map_representation" name="octomap_pub">
+
+
+    </node>
+    <param name="octomap_path" type="string" value="$(find core_octomap_map_representation)/preprocessing/test.bt" />
+
+
+</launch>

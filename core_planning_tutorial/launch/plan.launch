@@ -1,0 +1,24 @@
+<launch>
+
+    <include file="$(find core_octomap_map_representation)/launch/octomap.launch"/>
+
+    <param name="octomap_map/target_frame" type="string" value="world" />
+    <param name="octomap_map/max_distance_dt" type="double" value="10.0" />
+    <param name="octomap_map/debug" type="bool" value="false" />
+
+
+    <node pkg="tf" type="static_transform_publisher" name="octomap" args="0 0 0 0 0 0 1 world map 100" />
+
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find core_planning_tutorial)/rviz/planning_tutorial.rviz"/>
+
+    <node name = "planning_tutorial" pkg="core_planning_tutorial" type="planning_tutorial" output = "screen" >
+
+
+
+    <param name="execute_target" type="double" value="0.5" />
+        <param name="map_representation" value="OctomapMapRepresentation" />
+
+    </node>
+
+
+</launch>
