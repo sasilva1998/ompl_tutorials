@@ -39,6 +39,7 @@ bool PlanningTutorial::initialize()
 bool PlanningTutorial::execute()
 {
 
+    // ! 1. configuration space definition
     ompl::base::RealVectorBounds bounds(3);
 
     double x(0), y(0), z(0);
@@ -55,23 +56,29 @@ bool PlanningTutorial::execute()
 
     si_xyzpsi = GetStandardXYZPsiSpacePtr();
     si_xyzpsi->getStateSpace()->as<XYZPsiStateSpace>()->setBounds(bounds);
+
+    // ! 2. set state validity checker
     si_xyzpsi->setStateValidityCheckingResolution(1.0 / si_xyzpsi->getMaximumExtent());
     si_xyzpsi->setStateValidityChecker(std::bind(&PlanningTutorial::isvalid, this, std::placeholders::_1));
     si_xyzpsi->setup();
 
+    // ! 3. set optimization objective
     pdef = std::make_shared<ob::ProblemDefinition>(si_xyzpsi);
     pdef->setOptimizationObjective(ob::OptimizationObjectivePtr(new ob::PathLengthOptimizationObjective(si_xyzpsi)));
 
+    // ! 4. define start and goals
     auto start = getStartState();
     auto goal = getGoalState();
     pdef->setStartAndGoalStates(start, goal);
 
+    // ! 5. planner
     auto planner = std::make_shared<og::RRTstar>(si_xyzpsi);
     planner->setProblemDefinition(pdef);
     planner->setup();
 
     ROS_INFO("Planner Initialized");
 
+    // ! 6. attempt to solve
     auto solved = planner->ob::Planner::solve(30.0); // seconds (edited)
 
     if (solved == ob::PlannerStatus::EXACT_SOLUTION)
